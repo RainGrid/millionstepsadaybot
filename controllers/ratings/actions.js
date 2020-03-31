@@ -8,7 +8,7 @@ exports.getDailyRatingsAction = async (ctx) => {
     if (user) {
         let today = moment().startOf('day');
         const records = await DailyRecord.find({ createdAt: { $gte: today.toDate() } }).populate('user').sort({ stepsCount: -1 });
-        if (records) {
+        if (records && records.length) {
             const currentUserRecord = records.find(record => record.user.id === user.id);
             const currentUserIndex = records.findIndex(record => record.user.id === user.id);
             let answer = '';
@@ -27,7 +27,11 @@ exports.getDailyRatingsAction = async (ctx) => {
                     stepsCount: currentUserRecord.stepsCount
                 });
             }
-            await ctx.reply(answer);
+            if (!answer) {
+                await ctx.reply(ctx.i18n.t('scenes.ratings.empty'));
+            } else {
+                await ctx.reply(answer);
+            }
         } else {
             await ctx.reply(ctx.i18n.t('scenes.ratings.empty'));
         }
@@ -51,7 +55,7 @@ exports.getTotalRatingsAction = async (ctx) => {
             }
         ]);
         records = await User.populate(records, { path: 'user' });
-        if (records) {
+        if (records && records.length) {
             const currentUserRecord = records.find(record => record.user.id === user.id);
             const currentUserIndex = records.findIndex(record => record.user.id === user.id);
             let answer = '';
@@ -70,14 +74,14 @@ exports.getTotalRatingsAction = async (ctx) => {
                     stepsCount: currentUserRecord.stepsCount
                 });
             }
-            await ctx.reply(answer);
+            if (!answer) {
+                await ctx.reply(ctx.i18n.t('scenes.ratings.empty'));
+            } else {
+                await ctx.reply(answer);
+            }
         } else {
             await ctx.reply(ctx.i18n.t('scenes.ratings.empty'));
         }
     }
     await ctx.answerCbQuery();
 };
-
-function roundDecimals(number, count) {
-    return Math.round((number + Number.EPSILON) * Math.pow(10, count)) / Math.pow(10, count);
-}
