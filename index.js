@@ -138,7 +138,7 @@ mongoose.connection.on('open', () => {
         console.log('Global error has happened, %O', error);
     });
 
-    cron.schedule('0 0 * * * *', () => {
+    cron.schedule('0 10-21 * * * *', () => {
         requestUsersActivity();
     });
 
