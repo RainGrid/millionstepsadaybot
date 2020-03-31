@@ -7,13 +7,7 @@ const DailyRecord = require('../../models/DailyRecord');
 exports.isAlreadyHasRecord = async (ctx) => {
     const user = await User.findOne({ telegram_id: ctx.from.id });
     if (user) {
-        let today = null;
-        if (user.timezone) {
-            today = moment();
-        } else {
-            today = moment();
-        }
-        today = today.startOf('day');
+        let today = moment().startOf('day');
         const record = await DailyRecord.find({ user: user._id, createdAt: { $gte: today.toDate() } });
         if (record.length) {
             return true;
